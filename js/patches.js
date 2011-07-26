@@ -1,9 +1,24 @@
+/*
+This file is part of text2music.
 
+text2music is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Foobar is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+*/
 var aPatches={
   Grungey:new Class({
         Extends: AudioletGroup,
         initialize: function(audiolet) {
-            AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+            AudioletGroup.apply(this, [audiolet, 0, 1]);
             // Basic wave
             this.saw = new Saw(audiolet, 100);
             
@@ -54,7 +69,7 @@ var aPatches={
   Synth:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-        AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+        AudioletGroup.apply(this, [audiolet, 0, 1]);
         // Basic wave
         this.sine = new Sine(audiolet, frequency);
         
@@ -82,7 +97,7 @@ var aPatches={
   /*Cymbal:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-        AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+        AudioletGroup.apply(this, [audiolet, 0, 1]);
         // Basic wave
         this.white = new WhiteNoise(audiolet);
         this.sine = new Sine(audiolet, frequency);
@@ -141,7 +156,7 @@ var aPatches={
   Snare:new Class({
         Extends: AudioletGroup,
         initialize: function(audiolet, frequency) {
-            AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+            AudioletGroup.apply(this, [audiolet, 0, 1]);
             // Basic wave
             this.white = new WhiteNoise(audiolet);        
             this.filter = new BandPassFilter(audiolet, 60);
@@ -184,7 +199,7 @@ var aPatches={
   Bongo:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-          AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+          AudioletGroup.apply(this, [audiolet, 0, 1]);
           // Basic wave
           this.white = new WhiteNoise(audiolet);        
           this.filter = new BandPassFilter(audiolet, frequency);
@@ -226,7 +241,7 @@ var aPatches={
   Doop:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-          AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+          AudioletGroup.apply(this, [audiolet, 0, 1]);
           // Basic wave
           this.white = new WhiteNoise(audiolet);        
           this.filter = new BandPassFilter(audiolet, frequency);
@@ -268,7 +283,7 @@ var aPatches={
   Guitar:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-        AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+        AudioletGroup.apply(this, [audiolet, 0, 1]);
         // Basic wave
         this.sine = new Saw(audiolet, frequency);
         
@@ -308,7 +323,7 @@ var aPatches={
 /*Guitar:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-          AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+          AudioletGroup.apply(this, [audiolet, 0, 1]);
           
           this.sine = new Sine(audiolet, frequency);
           this.filter = DampedCombFilter(audiolet, 0.1, 0.05, 0.1, 1);
@@ -341,7 +356,7 @@ var aPatches={
 Fuzzed:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-          AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+          AudioletGroup.apply(this, [audiolet, 0, 1]);
           // Basic wave
           this.white = new WhiteNoise(audiolet);        
           this.filter = new BandPassFilter(audiolet, frequency);
@@ -383,7 +398,7 @@ Fuzzed:new Class({
   Hiss:new Class({
       Extends: AudioletGroup,
       initialize: function(audiolet, frequency) {
-        AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+        AudioletGroup.apply(this, [audiolet, 0, 1]);
         // Basic wave
         this.white = new WhiteNoise(audiolet);
         this.filter = new HighPassFilter(audiolet, frequency);
@@ -412,7 +427,7 @@ Fuzzed:new Class({
   BassDrum:new Class({
     Extends: AudioletGroup,
     initialize: function(audiolet, frequency) {
-      AudioletGroup.prototype.initialize.apply(this, [audiolet, 0, 1]);
+      AudioletGroup.apply(this, [audiolet, 0, 1]);
       // Basic wave
       this.sine = new Sine(audiolet, 49);
       //this.filter = new LowPassFilter(audiolet, frequency);
