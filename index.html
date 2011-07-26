@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Stretchyboy's AudioLet Text2Music</title>
+        <!-- Production -->
+        <!--
+        <script src="src/mootools/mootools-core-1.3-full-nocompat-yc.js"></script>
+        <script src="src/audiolet/Audiolet.min.js"></script>
+        -->
+
+        <!-- Development -->
+        <script src="mootools/mootools-core-1.3.2-full-compat.js"></script>
+        <script src="mootools/mootools-more-1.3.2.1.js"></script>
+        
+        <script src="audiolet/src/audiolet/Audiolet.js"></script>
+        <script src="databinding/Source/DataBinding.js"></script>
+
+        
+        <!-- Common -->
+        <script src="audiolet/src/audiofile/audiofile.js"></script>
+        <script src="music/music.js"></script>
+        <script src="js/patches.js"></script>
+        <script src="js/musiclet_app.js"></script>
+    
+        <style type="text/css">
+          #form{display:none;}
+        </style>
+    </head>
+    <body>
+    <h1 style="padding:0; margin:0;">Stretchyboy's AudioLet Text2Music</h1> 
+    
+    <textarea id="text" rows="4" cols="130">Hi this page takes the text in this box and converts into music.
+It uses generative algorithms I came up with and the rather great music.js and Audiolet (http://oampo.github.com/Audiolet/) although this is based on the mootools based version which has now been dropped.
+USAGE: Get the text that you want in this box (you can use this text to start with, or use the 'Text From Twitter' or type). 
+Hit 'Start Playing' it will start 30 seconds of music based on what you added. Click 'More' for it to generate more music from the rest of that text.
+You can tweak what instruments will be used the next time you add more music (yes I know they are a bit rubbish but this was my first time doing synths).
+Tested in FireFox 4/5/6 and FireFox Mobile.
+    </textarea>
+    <p>
+    <input id="add" type='button' value='Start Playing' />
+    <input id="pad" type='button' value='More' />
+    <input id="repeat" type='button' value='Restart Text' />
+    <input id="twitter" type='button' value='Text From Twitter' />
+    Screenname<input id="screenname" value='stretchyboy' size="20"/>
+    
+     Pos  <span id="currtime">0</span> / <span id="sorteduntil">0</span>
+     
+    
+    </p>
+    
+    <table id="formholder">
+      <tr><th>Live</th><th>Instrument</th><th>Loop Length</th><th>Min</th><th>Max</th>
+      <th>Emphasis</th><th>Base Octave</th>
+      <!--<th>Alt Instrument</th>-->
+      </tr>
+      <tr style="font-size:50%;"><td>&nbsp;</td><td>&nbsp;</td><td>(in Bars)</td><td colspan="2">Proportion of possible beats used 0-1</td>
+      <td>Beat which will always be hit</td><td>&nbsp;</td>
+      <!--<td>Alt Instrument</td>-->
+      </tr>
+      
+      <tr id="form">
+        <td>
+        <select name="active">
+          <option value="0">No</option>
+          <option value="1">Yes</option>
+        </select>
+        </td>
+        <td>
+        <select name="instrument">
+          <option value="Synth">Synth</option>
+          <option value="Snare">Snare</option>
+          <option value="Bongo">Bongo</option>
+          <option value="Doop">Doop</option>
+          <option value="Guitar">Guitar</option>
+          <option value="Fuzzed">Fuzzed</option>
+          <option value="Hiss">Hiss</option>
+          <option value="BassDrum">BassDrum</option>
+        </select>
+        </td>
+        <td>
+        <input size="2" name="bars" value="2"  />
+        </td>
+        <td>
+        <input  size="4" name="min"   value="0.1"/>
+        </td>
+        <td><input  size="4" name="max"   value="0.6"/>
+        </td>
+        <td><input  size="2" name="beat" value="0"/>
+        </td>
+        <td><input  size="2" name="baseOctave"  value="3" />
+        </td>
+        <td>
+        <!--<select name="alt">
+          <option value="">None</option>
+          <option value="Synth">Synth</option>
+          <option value="Snare">Snare</option>
+          <option value="Bongo">Bongo</option>
+          <option value="Doop">Doop</option>
+          <option value="Guitar">Guitar</option>
+          <option value="Fuzzed">Fuzzed</option>
+          <option value="Hiss">Hiss</option>
+          <option value="BassDrum">BassDrum</option>
+        </select>-->
+      </td>
+        </tr>
+    </table>
+    
+    <h2>Text that has been added to the tune</h2>
+    <div id="output"></div>
+    
+    </body>
+</html>
+
+

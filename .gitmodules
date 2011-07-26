@@ -1,0 +1,9 @@
+[submodule "audiolet"]
+	path = audiolet
+	url = https://github.com/oampo/Audiolet.git
+[submodule "music"]
+	path = music
+	url = https://github.com/GregJ/music.js.git
+[submodule "databinding"]
+	path = databinding
+	url = https://github.com/DEEO/DataBinding.git
