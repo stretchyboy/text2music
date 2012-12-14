@@ -17,25 +17,6 @@ along with Text2music.  If not, see <http://www.gnu.org/licenses/>.
 
 window.addEvent("domready", function() {
 
-var AudioletAppChord = new Class({
-	initialize: function(chordArray) {
-		this.audiolet = new Audiolet();
-
-		var chordPattern = new PSequence([chordArray]);
-
-		// Play the progression
-		this.audiolet.scheduler.play([chordPattern], 1,
-									 this.playChord.bind(this));
-	},
-
-	playChord: function(chord) {
-		for (var i=0; i<chord.length; i++) {
-			var synth = new Synth(this.audiolet, chord[i].frequency());
-			synth.connect(this.audiolet.output);
-		}
-	}
-});
-
 var aInstruments = null;
 
 var PlayTunes = new Class({
@@ -61,7 +42,11 @@ var PlayTunes = new Class({
     
     //console.log("this.lengthInBars =", this.lengthInBars);
 
-		this.audiolet = new Audiolet();
+    var bufferSize = 65536;
+    var sampleRate = 44100;
+
+
+		this.audiolet = new Audiolet(sampleRate, 2, bufferSize );
 	  this.audiolet.scheduler.setTempo(this.iTempo);
 		
 		this.audiolet.scheduler.beatsPerBar = this.beatsPerBar;
@@ -481,7 +466,7 @@ var fAddText = function(event)
   {
     if (myTune === false)
     { 
-      myTune = new PlayTunes(aInstruments, aPatches, 8, 80 * 3, 0.5);
+      myTune = new PlayTunes(aInstruments, aPatches, 8, 80 * 3, 0.25);
       var intervalID = fTimeCheck.periodical(1000);
       $('add').set('value','Add Text');
     }

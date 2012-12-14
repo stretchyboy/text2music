@@ -424,7 +424,7 @@ Fuzzed:new Class({
       }
     }),
   
-  BassDrum:new Class({
+  BassDrumSynth:new Class({
     Extends: AudioletGroup,
     initialize: function(audiolet, frequency) {
       AudioletGroup.apply(this, [audiolet, 0, 1]);
@@ -451,7 +451,41 @@ Fuzzed:new Class({
       this.env.connect(this.envMulAdd);
       this.envMulAdd.connect(this.gain, 0, 1);
     }
+    }),
+
+
+  BassDrum:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+      AudioletGroup.apply(this, [audiolet, 0, 1]);
+      
+      
+      this.bd = new AudioletBuffer(1, 0);
+      this.bd.load('audiolet/examples/drum-machine/audio/bd_stereo.wav', false);
+      this.playerBd = new BufferPlayer(audiolet, this.bd, 1, 0, 0);
+      this.triggerBd = new TriggerControl(audiolet);
+      this.gainBd = new Gain(audiolet, 1.00);
+      this.panBd = new Pan(audiolet, 0.45);
+      this.triggerBd.connect(this.playerBd, 0, 1);
+      this.playerBd.connect(this.gainBd);
+      this.gainBd.connect(this.panBd);
+      //this.panBd.connect(audiolet.output);
+      this.panBd.connect(this.outputs[0]);
+       
+      /*
+      this.sine.connect(this.gain);
+      //this.sine.connect(this.gain);
+      this.gain.connect(this.outputs[0]);
+      
+      // Envelope
+      this.env.connect(this.envMulAdd);
+      this.envMulAdd.connect(this.gain, 0, 1);
+      */
+    }
     })
+
+
+
 
 };
 
