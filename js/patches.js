@@ -15,83 +15,282 @@ You should have received a copy of the GNU General Public License
 along with Text2music.  If not, see <http://www.gnu.org/licenses/>.
 */
 var aPatches={
-  Grungey:new Class({
-        Extends: AudioletGroup,
-        initialize: function(audiolet) {
-            AudioletGroup.apply(this, [audiolet, 0, 1]);
-            // Basic wave
-            this.saw = new Saw(audiolet, 100);
-            
-            // Frequency LFO
-            this.frequencyLFO = new Sine(audiolet, 2);
-            this.frequencyMA = new MulAdd(audiolet, 10, 100);
+  Grungey: new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet) {
+      AudioletGroup.apply(this, [audiolet, 0, 1]);
+      // Basic wave
+      this.saw = new Saw(audiolet, 100);
+      
+      // Frequency LFO
+      this.frequencyLFO = new Sine(audiolet, 2);
+      this.frequencyMA = new MulAdd(audiolet, 10, 100);
 
-            // Filter
-            this.filter = new LowPassFilter(audiolet, 1000);
-            
-            // Filter LFO
-            this.filterLFO = new Sine(audiolet, 8);
-            this.filterMA = new MulAdd(audiolet, 900, 1000);
+      // Filter
+      this.filter = new LowPassFilter(audiolet, 1000);
+      
+      // Filter LFO
+      this.filterLFO = new Sine(audiolet, 8);
+      this.filterMA = new MulAdd(audiolet, 900, 1000);
 
-            // Gain envelope
-            this.gain = new Gain(audiolet);
-            this.env = new ADSREnvelope(audiolet,
-                                        1, // Gate
-                                        0.2, // Attack
-                                        0.2, // Decay
-                                        0.2, // Sustain
-                                        0.2, // Release
-                                        function() {
-				this.audiolet.scheduler.addRelative(0, this.remove.bind(this));
-			}.bind(this)
-			      );
+      // Gain envelope
+      this.gain = new Gain(audiolet);
+      this.env = new ADSREnvelope(audiolet,
+                                  1, // Gate
+                                  0.2, // Attack
+                                  0.2, // Decay
+                                  0.2, // Sustain
+                                  0.2, // Release
+        function() {
+          this.audiolet.scheduler.addRelative(0, this.remove.bind(this));
+        }.bind(this)
+			);
 			      
 			      
-            // Main signal path
-            this.saw.connect(this.filter);
-            this.filter.connect(this.gain);
-            this.gain.connect(this.outputs[0]);
+      // Main signal path
+      this.saw.connect(this.filter);
+      this.filter.connect(this.gain);
+      this.gain.connect(this.outputs[0]);
 
-            // Frequency LFO
-            this.frequencyLFO.connect(this.frequencyMA);
-            this.frequencyMA.connect(this.saw);
+      // Frequency LFO
+      this.frequencyLFO.connect(this.frequencyMA);
+      this.frequencyMA.connect(this.saw);
 
-            // Filter LFO
-            this.filterLFO.connect(this.filterMA);
-            this.filterMA.connect(this.filter, 0, 1);
+      // Filter LFO
+      this.filterLFO.connect(this.filterMA);
+      this.filterMA.connect(this.filter, 0, 1);
 
-            // Envelope
-            this.env.connect(this.gain, 0, 1);
-        }
-    }),
-    
+      // Envelope
+      this.env.connect(this.gain, 0, 1);      
+    }
+  }),
 
-  Synth:new Class({
-      Extends: AudioletGroup,
-      initialize: function(audiolet, frequency) {
-        AudioletGroup.apply(this, [audiolet, 0, 1]);
-        // Basic wave
-        this.sine = new Sine(audiolet, frequency);
-        
-        // Gain envelope
-        this.gain = new Gain(audiolet, 0.5);
-        this.env = new PercussiveEnvelope(audiolet, 1, 0.2, 0.5,
+  Clean:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+       AudioletGroup.call(this, audiolet, 0, 1);
+      // Basic wave
+      this.saw = new Saw(audiolet, frequency);
+
+      // Gain envelope
+      this.gain = new Gain(audiolet);
+      this.env = new PercussiveEnvelope(audiolet, 1, 0.1, 0.1,
           function() {
-            this.audiolet.scheduler.addRelative(0, this.remove.bind(this));
+              this.audiolet.scheduler.addRelative(0, this.remove.bind(this));
           }.bind(this)
+      );
+      this.envMulAdd = new MulAdd(audiolet, 0.3, 0);
+
+      // Main signal path
+      this.saw.connect(this.gain);
+      this.gain.connect(this.outputs[0]);
+
+      // Envelope
+      this.env.connect(this.envMulAdd);
+      this.envMulAdd.connect(this.gain, 0, 1);
+    }
+  }),
+
+  
+  /*Synth:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+      
+    }
+  }),*/  
+
+  Shaker:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+      AudioletGroup.call(this, audiolet, 0, 1);
+        // White noise source
+        this.white = new WhiteNoise(audiolet);
+
+        // Gain envelope
+        this.gainEnv = new PercussiveEnvelope(audiolet, 1, 0.01, 0.05,
+            function() {
+                // Remove the group ASAP when env is complete
+                this.audiolet.scheduler.addRelative(0,
+                                                    this.remove.bind(this));
+            }.bind(this)
         );
-        
-        this.envMulAdd = new MulAdd(audiolet, 0.1, 0);
-    
-        // Main signal path
+        this.gainEnvMulAdd = new MulAdd(audiolet, 0.15);
+        this.gain = new Gain(audiolet);
+
+        // Filter
+        this.filter = new BandPassFilter(audiolet, 3000);
+
+        this.upMixer = new UpMixer(audiolet, 2);
+
+        // Connect the main signal path
+        this.white.connect(this.filter);
+        this.filter.connect(this.gain);
+
+        // Connect the gain envelope
+        this.gainEnv.connect(this.gainEnvMulAdd);
+        this.gainEnvMulAdd.connect(this.gain, 0, 1);
+        this.gain.connect(this.upMixer);
+        this.upMixer.connect(this.outputs[0]);
+    }
+  }),
+  
+  BassSynth:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+              AudioletGroup.call(this, audiolet, 0, 1);
+        // Basic wave
+        this.sine = new Sine(audiolet, 100);
+
+        // Frequency Modulator
+        this.fmEnv = new PercussiveEnvelope(audiolet, 10, 10, 2);
+        this.fmEnvMulAdd = new MulAdd(audiolet, 90, 0);
+        this.frequencyModulator = new Saw(audiolet);
+        this.frequencyMulAdd = new MulAdd(audiolet, 90, 100);
+
+        // Gain envelope
+        this.gain = new Gain(audiolet);
+        this.gainEnv = new ADSREnvelope(audiolet,
+                                        1, // Gate
+                                        1, // Attack
+                                        0.2, // Decay
+                                        0.9, // Sustain
+                                        2); // Release
+        this.gainEnvMulAdd = new MulAdd(audiolet, 0.2);
+
+        this.upMixer = new UpMixer(audiolet, 2);
+
+        // Connect main signal path
         this.sine.connect(this.gain);
-        this.gain.connect(this.outputs[0]);
-    
-        // Envelope
-        this.env.connect(this.envMulAdd);
-        this.envMulAdd.connect(this.gain, 0, 1);
-      }
-    }),
+        this.gain.connect(this.upMixer);
+        this.upMixer.connect(this.outputs[0]);
+
+        // Connect Frequency Modulator
+        this.fmEnv.connect(this.fmEnvMulAdd);
+        this.fmEnvMulAdd.connect(this.frequencyMulAdd, 0, 1);
+        this.frequencyModulator.connect(this.frequencyMulAdd);
+        this.frequencyMulAdd.connect(this.sine);
+
+        // Connect Envelope
+        this.gainEnv.connect(this.gainEnvMulAdd);
+        this.gainEnvMulAdd.connect(this.gain, 0, 1);
+    }
+  }),
+  
+  
+  BassDrum:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+      AudioletGroup.call(this, audiolet, 0, 1);
+        // Main sine oscillator
+        this.sine = new Sine(audiolet, 80);
+
+        // Pitch Envelope - from 81 to 1 hz in 0.3 seconds
+        this.pitchEnv = new PercussiveEnvelope(audiolet, 1, 0.001, 0.3);
+        this.pitchEnvMulAdd = new MulAdd(audiolet, 80, 1);
+
+        // Gain Envelope
+        this.gainEnv = new PercussiveEnvelope(audiolet, 1, 0.001, 0.3,
+            function() {
+                // Remove the group ASAP when env is complete
+                this.audiolet.scheduler.addRelative(0,
+                                                    this.remove.bind(this));
+            }.bind(this)
+        );
+        this.gainEnvMulAdd = new MulAdd(audiolet, 0.7);
+        this.gain = new Gain(audiolet);
+        this.upMixer = new UpMixer(audiolet, 2);
+
+
+        // Connect oscillator
+        this.sine.connect(this.gain);
+
+        // Connect pitch envelope
+        this.pitchEnv.connect(this.pitchEnvMulAdd);
+        this.pitchEnvMulAdd.connect(this.sine);
+
+        // Connect gain envelope
+        this.gainEnv.connect(this.gainEnvMulAdd);
+        this.gainEnvMulAdd.connect(this.gain, 0, 1);
+        this.gain.connect(this.upMixer);
+        this.upMixer.connect(this.outputs[0]);
+    }
+  }),
+  
+  HighSynth:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+              AudioletGroup.call(this, audiolet, 0, 1);
+
+        // Triangle base oscillator
+        this.triangle = new Triangle(audiolet);
+
+        // Note on trigger
+        this.trigger = new TriggerControl(audiolet);
+
+        // Gain envelope
+        this.gainEnv = new PercussiveEnvelope(audiolet, 0, 0.1, 0.15);
+        this.gainEnvMulAdd = new MulAdd(audiolet, 0.1);
+        this.gain = new Gain(audiolet);
+
+        // Feedback delay
+        this.delay = new Delay(audiolet, 0.1, 0.1);
+        this.feedbackLimiter = new Gain(audiolet, 0.5);
+
+        // Stereo panner
+        this.pan = new Pan(audiolet);
+        this.panLFO = new Sine(audiolet, 1 / 8);
+
+
+        // Connect oscillator
+        this.triangle.connect(this.gain);
+
+        // Connect trigger and envelope
+        this.trigger.connect(this.gainEnv);
+        this.gainEnv.connect(this.gainEnvMulAdd);
+        this.gainEnvMulAdd.connect(this.gain, 0, 1);
+        this.gain.connect(this.delay);
+
+        // Connect delay
+        this.delay.connect(this.feedbackLimiter);
+        this.feedbackLimiter.connect(this.delay);
+        this.gain.connect(this.pan);
+        this.delay.connect(this.pan);
+
+        // Connect panner
+        this.panLFO.connect(this.pan, 0, 1);
+        this.pan.connect(this.outputs[0]);
+
+    }
+  }),
+  
+  Synth:new Class({
+    Extends: AudioletGroup,
+    initialize: function(audiolet, frequency) {
+      AudioletGroup.apply(this, [audiolet, 0, 1]);
+      // Basic wave
+      this.sine = new Sine(audiolet, frequency);
+      
+      // Gain envelope
+      this.gain = new Gain(audiolet, 0.5);
+      this.env = new PercussiveEnvelope(audiolet, 1, 0.2, 0.5,
+        function() {
+          this.audiolet.scheduler.addRelative(0, this.remove.bind(this));
+        }.bind(this)
+      );
+      
+      this.envMulAdd = new MulAdd(audiolet, 0.1, 0);
+  
+      // Main signal path
+      this.sine.connect(this.gain);
+      this.gain.connect(this.outputs[0]);
+  
+      // Envelope
+      this.env.connect(this.envMulAdd);
+      this.envMulAdd.connect(this.gain, 0, 1);
+    }
+  }),
+  
+  
 
 
   /*Cymbal:new Class({
@@ -153,7 +352,8 @@ var aPatches={
     */
 
 
-  Snare:new Class({
+    
+  NIN:new Class({
         Extends: AudioletGroup,
         initialize: function(audiolet, frequency) {
             AudioletGroup.apply(this, [audiolet, 0, 1]);
@@ -422,36 +622,6 @@ Fuzzed:new Class({
         this.env.connect(this.envMulAdd);
         this.envMulAdd.connect(this.gain, 0, 1);
       }
-    }),
-  
-  BassDrum:new Class({
-    Extends: AudioletGroup,
-    initialize: function(audiolet, frequency) {
-      AudioletGroup.apply(this, [audiolet, 0, 1]);
-      // Basic wave
-      this.sine = new Sine(audiolet, 49);
-      //this.filter = new LowPassFilter(audiolet, frequency);
-      
-      // Gain envelope
-      this.gain = new Gain(audiolet, 0.3);
-      
-      this.env = new PercussiveEnvelope(audiolet, 0.05, 0.05, 0.15,
-        function() {
-          this.audiolet.scheduler.addRelative(0, this.remove.bind(this));
-        }.bind(this)
-      );
-      this.envMulAdd = new MulAdd(audiolet, 0.3, 0);
-  
-      // Main signal path
-      this.sine.connect(this.gain);
-      //this.sine.connect(this.gain);
-      this.gain.connect(this.outputs[0]);
-      
-      // Envelope
-      this.env.connect(this.envMulAdd);
-      this.envMulAdd.connect(this.gain, 0, 1);
-    }
     })
-
 };
 

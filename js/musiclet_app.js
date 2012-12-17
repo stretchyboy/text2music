@@ -481,7 +481,7 @@ var fAddText = function(event)
   {
     if (myTune === false)
     { 
-      myTune = new PlayTunes(aInstruments, aPatches, 8, 80 * 3, 0.5);
+      myTune = new PlayTunes(aInstruments, aPatches, 8, 80 * 3, 0.30);
       var intervalID = fTimeCheck.periodical(1000);
       $('add').set('value','Add Text');
     }
@@ -598,13 +598,11 @@ $('twitter').addEvent('click', fGetFromTwitter);
 
 aInstruments = [
   {active:1,instrument:'BassDrum', bars:2, min:0.1, max:0.6, beat:0, baseOctave:'3', alt:''},
-  {active:1,instrument:'Doop',    bars:4, min:0.4, max:0.9, beat:0   , baseOctave:'4', alt:''},
-  {active:0,instrument:'Snare',    bars:2, min:0.3, max:0.7, beat:8, baseOctave:'3', alt:''}, 
-  //{active:0,instrument:'grungey',  bars:2, min:0.3, max:0.7, beat:0   , baseOctave:'2', alt:''}
-  {active:0,instrument:'Bongo',    bars:2, min:0.3, max:0.7, beat:8, baseOctave:'3', alt:''},
-  //{active:0,instrument:'Doop',    bars:2, min:0.4, max:0.9, beat:0   , baseOctave:'2', alt:''},
-  {active:0,instrument:'BassDrum', bars:4, min:0.1, max:0.6, beat:8, baseOctave:'3', alt:''}
-  //{active:0,instrument:'Snare', bars:8, min:0.1, max:0.3, beat:0, baseOctave:'3', alt:''}
+  {active:1,instrument:'Shaker',   bars:2, min:0.3, max:0.7, beat:4, baseOctave:'3', alt:''}, 
+  {active:0,instrument:'NIN',      bars:2, min:0.3, max:0.7, beat:8, baseOctave:'3', alt:''}, 
+  {active:0,instrument:'Shaker',   bars:2, min:0.3, max:0.7, beat:8, baseOctave:'3', alt:''}, 
+  {active:0,instrument:'Bongo',    bars:4, min:0.6, max:0.9, beat:0, baseOctave:'4', alt:''},
+  {active:0,instrument:'Guitar',   bars:4, min:0.1, max:0.6, beat:8, baseOctave:'3', alt:''}
   
 ];
 
